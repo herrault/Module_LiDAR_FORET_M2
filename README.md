@@ -1,5 +1,3 @@
-# Module_LiDAR_FORET_M2
-
 # Analyse de structure de canopée et classification de peuplements à partir de données LiDAR
 
 **Niveau** : Master 2  

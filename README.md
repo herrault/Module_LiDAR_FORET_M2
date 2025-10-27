@@ -34,10 +34,10 @@ Un point de cours rapide vous sera proposé afin de reprendre les points suivant
 Votre premier objectif consiste à prendre en main une tuile .las et à l'importer dans CloudCompare. Prenez le temps d'explorer la donnée, ses spécificités, son hétérogénéité. 
 
 - **Ouverture d’une tuile LiDAR (.LAS)** : repérage des canaux (X, Y, Z, Intensity, ReturnNumber, Classification).  
-- **Colorisation du nuage** : par altitude, intensité et nombre de retours.  
-- **Affichage de sections et coupes verticales** pour comprendre la stratification de la canopée.  
+- **Colorisation du nuage** : par altitude, intensité et nombre de retours. NB : n'hésitez pas à visualiser la distribution des variables et à modifier les bornes min-max pour mieux saisir l'amplitude des valeurs. 
+- **Affichage de sections et coupes verticales** pour comprendre la stratification de la canopée. Par exemple, visualisez les points dans les deux mètres supérieurs. Ceux situés dans le premier mètre en partant du sol. Pour ces derniersq, qu'observez vous ?   
 - **Exercice pratique : suppression manuelle de points parasites** (ex. points isolés, erreurs de sol).  
-  - Utilisation de l’outil “segment” et export du nuage nettoyé au format `.las`.
+  - Pour cela, utilisez l’outil “segment” et export du nuage nettoyé au format `.las`.
 
 #### 3. Importation dans R (1h)
 
@@ -58,6 +58,8 @@ head(las@data)                             ## visualiser la structure de la tabl
 summary(las@data$Z)                        ## checker les statistiques de hauteur
 
 las_canopy <- filter_poi(las, Z > 1 & ReturnNumber == 1)       ## filtrer les points constituant la canopée
+
+plot(las, color = "Intensity") ## Reproduisez la même ligne en appliquant une palette viridis à la hauteur des points
 ```
 ---
 
@@ -70,13 +72,15 @@ las_canopy <- filter_poi(las, Z > 1 & ReturnNumber == 1)       ## filtrer les po
 - Nous allons premièrement revenir sur la proposition de classification structurale proposée par **Fahey et al. (2022)**. Quels sont les trois dimensions proposées ? En quoi reflètent-elles la structure globale d'un environnement forestier ?
 - Dans le script fourni, repérez les 3 groupes de variables suivants. 
   
-  - Variables de hauteur (moyenne, max, écart-type, Canopy Cover).  
-  - Variables liées à l'hétérogénéité horizontale (Rumple index, Gap Fraction).   
-  - Variables liées à la distribution verticale (LAD, PAD, VCI).
+  - Variables de hauteur 
+  - Variables liées à l'hétérogénéité horizontale 
+  - Variables liées à la distribution verticale 
  
-- Pour chacune des variables utilisées pour chacun groupes, dites en quoi elles peuvent être complémentaires ? Quel intérêt peut-il y avoir à calculer ces différentes variables ?
+- Pour chacune des variables utilisées pour chaque groupe, dites en quoi elles peuvent être complémentaires ? Quel intérêt peut-il y avoir à calculer ces différentes variables ?
 
 #### 2. Mise en place du script (2h)
+
+Pour cette section, l'objectif va être de faire fonctionner le script pour calculer les variables sur la totalité de vos plots. 
 
 - Explication et exécution du script fourni pas à pas (voir fichier `extraction_metrics.R`).
 - Calcul des métriques par maille : hauteur, rugosité, couverture, densité de scan, etc.
@@ -85,16 +89,13 @@ las_canopy <- filter_poi(las, Z > 1 & ReturnNumber == 1)       ## filtrer les po
 data <- read.csv("results_canopy_metrics.csv")
 summary(data)
 ```
-- Discussion sur le sens écologique de chaque variable.
+- Qu'observez vous sur la distribution statistique des variables calculées. 
 
 #### 3. Discussion finale (40 min)
+
 - Interprétation des variables.  
 - Lien avec les typologies structurales de Fahey (axes continus de hauteur, compacité, hétérogénéité).
-
-**Production attendue :**
-- Un script R fonctionnel d’extraction des métriques.  
-- Un tableau CSV complet de variables structurales par maille.  
-
+  
 ---
 
 ### 🟦 Séance 3 — Classification et spatialisation des peuplements (3h)

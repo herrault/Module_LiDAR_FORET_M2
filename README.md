@@ -11,7 +11,7 @@
 
 ## Objectif général du module
 
-Comprendre et mettre en œuvre une approche complète d’analyse LiDAR pour la **caractérisation et la classification de peuplements forestiers**, depuis l’exploration du nuage de points jusqu’à la production d’une carte de classes structurales.
+Ce module appartient à l'UE Traitement de Nuages de Points et dure 12h. Les objectifs seront de comprendre et mettre en œuvre une approche complète d’analyse LiDAR pour la **caractérisation et la classification de peuplements forestiers**, depuis l’exploration du nuage de points jusqu’à la production d’une carte de classes structurales.
 
 ---
 
@@ -70,9 +70,11 @@ las_canopy <- filter_poi(las, Z > 1 & ReturnNumber == 1)       ## filtrer les po
 - Nous allons premièrement revenir sur la proposition de classification structurale proposée par **Fahey et al. (2022)**. Quels sont les trois dimensions proposées ? En quoi reflètent-elles la structure globale d'un environnement forestier ?
 - Dans le script fourni, repérez les 3 groupes de variables suivants. 
   
-  - Variables de hauteur (moyenne, max, écart-type).  
-  - Variables de rugosité et d’hétérogénéité (Rumple index, Canopy Cover).  
+  - Variables de hauteur (moyenne, max, écart-type, Canopy Cover).  
+  - Variables liées à l'hétérogénéité horizontale (Rumple index, Gap Fraction).   
   - Variables liées à la distribution verticale (LAD, PAD, VCI).
+ 
+- Pour chacune des variables utilisées pour chacun groupes, dites en quoi elles peuvent être complémentaires ? Quel intérêt peut-il y avoir à calculer ces différentes variables ?
 
 #### 2. Mise en place du script (2h)
 

@@ -4,7 +4,7 @@
 **Durée** : 3 séances de 3h  
 **Pré-requis** : notions de base en R, connaissance générale des écosystèmes forestiers  
 **Logiciels utilisés** : CloudCompare, R (packages `lidR`, `terra`, `sf`, `dplyr`, `SciViews`, `xfun`)  
-**Encadrant** : [Nom de l’enseignant]  
+**Encadrant** : Herrault Pierre-Alexis
 **Données** : fournies (fichiers `.LAS`, MNT, grille d’échantillonnage shapefile)  
 
 ---
@@ -22,11 +22,17 @@ Comprendre et mettre en œuvre une approche complète d’analyse LiDAR pour la 
 **Objectif :** Comprendre la nature et la structure des données LiDAR aériennes, visualiser et manipuler un nuage de points, et savoir les importer dans R.
 
 #### 1. Introduction (20 min)
+
+Un point de cours rapide vous sera proposé afin de reprendre les points suivants : 
+
 - Rappel du principe du LiDAR aéroporté : hauteur, intensité, retour laser, sol / végétation.  
-- Présentation des objectifs du module : de la donnée brute à la classification structurale.  
-- Présentation rapide du papier de **Fahey et al. (2022)** pour introduire l’idée de typologie structurale basée sur des variables intégratives.
+- Présentation des objectifs du module : de la donnée brute à la classification structurale de la végétation 
+- Présentation rapide du papier de **Fahey et al. (2022)** pour introduire l’idée de typologie structurale basée sur des variables LiDAR. 
 
 #### 2. Visualisation dans CloudCompare (1h15)
+
+Votre premier objectif consiste à prendre en main une tuile .las et à l'importer dans CloudCompare. Prenez le temps d'explorer la donnée, ses spécificités, son hétérogénéité. 
+
 - **Ouverture d’une tuile LiDAR (.LAS)** : repérage des canaux (X, Y, Z, Intensity, ReturnNumber, Classification).  
 - **Colorisation du nuage** : par altitude, intensité et nombre de retours.  
 - **Affichage de sections et coupes verticales** pour comprendre la stratification de la canopée.  
@@ -34,27 +40,25 @@ Comprendre et mettre en œuvre une approche complète d’analyse LiDAR pour la 
   - Utilisation de l’outil “segment” et export du nuage nettoyé au format `.las`.
 
 #### 3. Importation dans R (1h)
+
+Dans un second temps, nous allons passer sur R pour visualiser cette même donnée. L'objectif est à terme d'utiliser cet environnement pour faciliter l'extraction de variables à partir de packages déjà développés. 
+
 ```r
 library(lidR)
 library(sf)
 library(terra)
 library(dplyr)
 
-ctg <- readLAScatalog("data/LAS/")
-mnt <- rast("data/mnt_coteaux_hiatus.tif")
-grid <- st_read("data/centre_grille_foret_hiatus.shp")
+ctg <- readLAScatalog("data/LAS/")    ## votre chemin vers les tuiles LAS
+mnt <- rast("data/mnt_coteaux_hiatus.tif")  ## votre chemin vers le MNT
+grid <- st_read("data/centre_grille_foret_hiatus.shp")   ## votre chemin vers la grille de plots
 
-las <- readLAS("data/example_tile.las")
-head(las@data)
-summary(las@data$Z)
+las <- readLAS("data/example_tile.las")    ## lire votre tuile 
+head(las@data)                             ## visualiser la structure de la table attributaire
+summary(las@data$Z)                        ## checker les statistiques de hauteur
 
-las_canopy <- filter_poi(las, Z > 1 & ReturnNumber == 1)
+las_canopy <- filter_poi(las, Z > 1 & ReturnNumber == 1)       ## filtrer les points constituant la canopée
 ```
-
-**Production attendue :**
-- Une tuile LiDAR nettoyée et sauvegardée.  
-- Un petit script R d’importation, filtrage et résumé des données.  
-
 ---
 
 ### 🟧 Séance 2 — Extraction des métriques structurales à partir du nuage de points (3h)
@@ -62,12 +66,16 @@ las_canopy <- filter_poi(las, Z > 1 & ReturnNumber == 1)
 **Objectif :** Extraire des variables décrivant la structure de la canopée à partir de données LiDAR normalisées, sur la base du script fourni.
 
 #### 1. Introduction (20 min)
-- Discussion sur la typologie structurale de **Fahey et al. (2022)** :  
+
+- Nous allons premièrement revenir sur la proposition de classification structurale proposée par **Fahey et al. (2022)**. Quels sont les trois dimensions proposées ? En quoi reflètent-elles la structure globale d'un environnement forestier ?
+- Dans le script fourni, repérez les 3 groupes de variables suivants. 
+  
   - Variables de hauteur (moyenne, max, écart-type).  
   - Variables de rugosité et d’hétérogénéité (Rumple index, Canopy Cover).  
   - Variables liées à la distribution verticale (LAD, PAD, VCI).
 
 #### 2. Mise en place du script (2h)
+
 - Explication et exécution du script fourni pas à pas (voir fichier `extraction_metrics.R`).
 - Calcul des métriques par maille : hauteur, rugosité, couverture, densité de scan, etc.
 - Vérification de la sortie `results_canopy_metrics.csv` :

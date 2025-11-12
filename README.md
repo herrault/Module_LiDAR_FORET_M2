@@ -39,7 +39,7 @@ Votre premier objectif consiste à prendre en main une tuile .las et à l'import
 - **Exercice pratique : suppression manuelle de points parasites** (ex. points isolés, erreurs de sol).  
   - Pour cela, utilisez l’outil “segment” et export du nuage nettoyé au format `.las`.
 
-#### 3. Importation dans R (1h)
+#### 3. Importation dans R 
 
 Dans un second temps, nous allons passer sur R pour visualiser cette même donnée. L'objectif est à terme d'utiliser cet environnement pour faciliter l'extraction de variables à partir de packages déjà développés. 
 
@@ -51,7 +51,7 @@ library(dplyr)
 
 ctg <- readLAScatalog("data/LAS/")    ## votre chemin vers les tuiles LAS
 mnt <- rast("data/mnt_coteaux_hiatus.tif")  ## votre chemin vers le MNT
-grid <- st_read("data/centre_grille_foret_hiatus.shp")   ## votre chemin vers la grille de plots
+grid <- st_read("data/plot_fabas.shp")   ## votre chemin vers la grille de plots
 
 las <- readLAS("data/example_tile.las")    ## lire votre tuile 
 head(las@data)                             ## visualiser la structure de la table attributaire
@@ -67,7 +67,7 @@ plot(las, color = "Intensity") ## Reproduisez la même ligne en appliquant une p
 
 **Objectif :** Extraire des variables décrivant la structure de la canopée à partir de données LiDAR normalisées, sur la base du script fourni.
 
-#### 1. Introduction (20 min)
+#### 1. Introduction 
 
 - Nous allons premièrement revenir sur la proposition de classification structurale proposée par **Fahey et al. (2022)**. Quels sont les trois dimensions proposées ? En quoi reflètent-elles la structure globale d'un environnement forestier ?
 - Dans le script fourni, repérez les 3 groupes de variables suivants. 
@@ -78,9 +78,9 @@ plot(las, color = "Intensity") ## Reproduisez la même ligne en appliquant une p
  
 - Pour chacune des variables utilisées pour chaque groupe, dites en quoi elles peuvent être complémentaires ? Quel intérêt peut-il y avoir à calculer ces différentes variables ?
 
-#### 2. Mise en place du script (2h)
+#### 2. Mise en place du script
 
-Pour cette section, l'objectif va être de faire fonctionner le script pour calculer les variables sur la totalité de vos plots. 
+Pour cette section, l'objectif va être de faire fonctionner le script pour calculer les variables sur la totalité de vos plots (plot_fabas)
 
 - Explication et exécution du script fourni pas à pas (voir fichier `extraction_metrics.R`).
 - Calcul des métriques par maille : hauteur, rugosité, couverture, densité de scan, etc.
@@ -89,12 +89,12 @@ Pour cette section, l'objectif va être de faire fonctionner le script pour calc
 data <- read.csv("results_canopy_metrics.csv")
 summary(data)
 ```
-- Ouvrez maintenant le fichier obtenu sur R et tracez la distibution de chaque variable à l'aide de boxplots ou d'histogramme. Qu'observez vous sur la distribution statistique des variables calculées ?
+- Tracez la distibution de chaque variable à l'aide de boxplots ou d'histogramme. Qu'observez vous sur la distribution statistique des variables calculées ?
 
-#### 3. Discussion finale (40 min)
+#### 3. Discussion finale 
 
 - Interprétation des variables.  
-- Lien avec les typologies structurales de Fahey (axes continus de hauteur, compacité, hétérogénéité).
+- Lien avec les typologies structurales de Fahey (axes continus de hauteur, hétérogénéité verticale et horizontale).
   
 ---
 
@@ -105,7 +105,7 @@ summary(data)
 #### 1. Préparation des données (30 min)
 ```r
 data <- read.csv("results_canopy_metrics.csv")
-grid <- st_read("data/centre_grille_foret_hiatus.shp")
+grid <- st_read("data/plot_fabas.shp")
 grid_data <- grid %>% left_join(data, by = "Id")
 ```
 
@@ -125,26 +125,16 @@ fviz_pca_biplot(res.pca)
 grid_data$classe <- res.hcpc$data.clust$clust
 plot(grid_data["classe"])
 ```
-- Distribution spatiale des classes et cohérence structurale.  
-- Comparaison avec des cartes externes (type forestier, âge du peuplement).  
-- Discussion sur les limites et perspectives.
+- Observez la distribution spatiale des classes. Appliquez une orthophoto IRC (=> grâce au flux de l'IGN). Commentez la cohérence entre la classification et la texture de l'orthophotographie. 
+- Comparez ensuite votre avec des cartes externes issus des Plans de Gestion Simple (cf Documentation). 
+- Notez vos résultats
 
 **Production attendue :**
-- Carte finale de classification structurale.  
-- Interprétation qualitative des types obtenus.  
-
----
-
-## Évaluation (optionnelle)
-
-Rédaction d’un court rapport (2–3 pages) :
-- Présentation des principales métriques calculées.  
-- Résumé de la classification et interprétation écologique.  
-- Discussion critique (limites, pistes d’amélioration).
+- Interprétation des types obtenus du point de vue de la structure et de la gestion 
 
 ---
 
 ## Références
 
-- **Fahey, R. T. et al. (2022)**. *Defining a spectrum of integrative trait-based vegetation canopy structural types.*  
+- **Fahey, R. T. et al. (2019)**. *Defining a spectrum of integrative trait-based vegetation canopy structural types.*  
 - **Roussel, J.-R. et al. (2020)**. *lidR: An R package for analysis of Airborne Laser Scanning (ALS) data.* *Remote Sensing of Environment, 251, 112061.*

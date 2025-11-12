@@ -89,7 +89,7 @@ Pour cette section, l'objectif va être de faire fonctionner le script pour calc
 data <- read.csv("results_canopy_metrics.csv")
 summary(data)
 ```
-- Qu'observez vous sur la distribution statistique des variables calculées. 
+- Ouvrez maintenant le fichier obtenu sur R et tracez la distibution de chaque variable à l'aide de boxplots ou d'histogramme. Qu'observez vous sur la distribution statistique des variables calculées ?
 
 #### 3. Discussion finale (40 min)
 

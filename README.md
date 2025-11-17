@@ -102,35 +102,101 @@ summary(data)
 
 **Objectif :** Réaliser une classification des peuplements selon leurs caractéristiques structurales et représenter les résultats spatialement.
 
-#### 1. Préparation des données (30 min)
+#### 1. Préparation des données
+
+Avant de procéder à la classification, importons les données dont nous aurons besoin à savoir les données produites ainsi que les plots pour ré-aggréger spatialement les données classées. 
+
 ```r
 data <- read.csv("results_canopy_metrics.csv")
 grid <- st_read("data/plot_fabas.shp")
 grid_data <- grid %>% left_join(data, by = "Id")
 ```
 
-#### 2. Classification (1h30)
+#### 2. Classification 
+
+Pour la classification des données plots, nous procéderons différemment de l'article que vous avez lu. Une simple ACP sera premièrement appliquée pour réduire la dimensionnalité du jeu de données puis nous utiliserons deuxièmement une classification 
+ascendante hiérachique pour classer les plots au sein du plan factoriel. 
+
 ```r
-library(FactoMineR)
-library(factoextra)
-res.pca <- PCA(data[, -1], scale.unit = TRUE)
-res.hcpc <- HCPC(res.pca, nb.clust = -1)
-fviz_pca_biplot(res.pca)
+library(FactoMineR)   # pour PCA et HCPC
+library(factoextra)   # pour visualisations
+library(dplyr)        # pour manipulation des données si besoin
+
+# Charger les données
+data <- read.csv("results_canopy_metrics.csv")
+
+# Vérifier les données
+head(data)
+str(data)
+
+
+# 2. ACP sur les variables (en excluant la colonne ID si présente)
+res.pca <- PCA(data[, -1],      # exclure colonne ID
+               scale.unit = TRUE,  # standardiser les variables
+               graph = FALSE)      # pas de graph par défaut
+
+
+# 3. Visualisation des résultats de l'ACP
+
+# Biplot général
+fviz_pca_biplot(res.pca, 
+                repel = TRUE,   # éviter le chevauchement des labels
+                col.var = "blue", 
+                col.ind = "gray") 
+
+# Cercle des corrélations (qualité de représentation des variables)
+fviz_pca_var(res.pca, col.var = "contrib") + 
+  scale_color_gradient2(low = "white", mid = "yellow", high = "red", midpoint = 5)
+
+# Contribution des variables aux axes principaux
+fviz_contrib(res.pca, choice = "var", axes = 1, top = 10) # top 10 variables sur axe 1
+fviz_contrib(res.pca, choice = "var", axes = 2, top = 10)
+
+# 4. Classification hiérarchique sur composantes principales (HCPC)
+
+res.hcpc <- HCPC(res.pca, nb.clust = -1, graph = FALSE)  # nb.clust=-1 permet de laisser HCPC choisir automatiquement
+fviz_dend(res.hcpc, rect = TRUE, show_labels = TRUE)   # revisualiser le dendrogramme pour ajuster
+res.hcpc <- HCPC(res.pca, nb.clust = 4, graph = FALSE)  # nb.clust=-1 permet de laisser HCPC choisir automatiquement
+
 ```
 - Interprétation des classes : moyennes de variables, signification structurale.  
 - Lien avec les types de canopées selon Fahey.
 
 #### 3. Spatialisation et validation (1h)
 ```r
-grid_data$classe <- res.hcpc$data.clust$clust
-plot(grid_data["classe"])
+# 5. Visualisation des clusters
+
+# Dendrogramme pour voir la hiérarchie
+fviz_dend(res.hcpc, rect = TRUE, show_labels = TRUE)
+
+# Projeter le résultat de clustering dans l'espace de la PCA
+fviz_cluster(res.hcpc, 
+             repel = TRUE, 
+             palette = "jco", 
+             geom = "point", 
+             ellipse.type = "convex")
+
+# Description des clusters (moyennes des variables par cluster)
+res.hcpc$desc.var$quanti    # variables quantitatives
+res.hcpc$desc.ind$dist      # individus les plus caractéristiques
+
+# Représentez sous la forme d'histogramme les résultats obtenus et donnez une première lecture des classes de structure
+
+# 6. Extra : ajouter les clusters au dataframe original
+data$cluster <- factor(res.hcpc$data.clust$clust)
+
+# Vérifier les clusters
+table(data$cluster)
+head(data)
+write.csv(data,"canopy_clusters.csv")
+
+# Joignez les résultats produits au shapefile de vos plots dans QGIS. Grâce aux résultats de
+# obtenus précédemment, décrivez les classes obtenus et remettez les en perspective dans le cas
+# de la forêt de Fabas
 ```
 - Observez la distribution spatiale des classes. Appliquez une orthophoto IRC (=> grâce au flux de l'IGN). Commentez la cohérence entre la classification et la texture de l'orthophotographie. 
-- Comparez ensuite votre avec des cartes externes issus des Plans de Gestion Simple (cf Documentation). 
+- Comparez ensuite votre classification avec des cartes externes issus des Plans de Gestion Simple (cf Documentation). 
 - Notez vos résultats
-
-**Production attendue :**
-- Interprétation des types obtenus du point de vue de la structure et de la gestion 
 
 ---
 

@@ -17,11 +17,11 @@ Ce module appartient à l'UE Traitement de Nuages de Points et dure 12h. Les obj
 
 ## Organisation des séances
 
-### 🟩 Séance 1 — Exploration et familiarisation avec les données LiDAR (3h)
+### 🟩 Séance 1 — Exploration et familiarisation avec les données LiDAR 
 
 **Objectif :** Comprendre la nature et la structure des données LiDAR aériennes, visualiser et manipuler un nuage de points, et savoir les importer dans R.
 
-#### 1. Introduction (20 min)
+#### 1. Introduction 
 
 Un point de cours rapide vous sera proposé afin de reprendre les points suivants : 
 
@@ -29,7 +29,7 @@ Un point de cours rapide vous sera proposé afin de reprendre les points suivant
 - Présentation des objectifs du module : de la donnée brute à la classification structurale de la végétation 
 - Présentation rapide du papier de **Fahey et al. (2022)** pour introduire l’idée de typologie structurale basée sur des variables LiDAR. 
 
-#### 2. Visualisation dans CloudCompare (1h15)
+#### 2. Visualisation dans CloudCompare 
 
 Votre premier objectif consiste à prendre en main une tuile .las et à l'importer dans CloudCompare. Prenez le temps d'explorer la donnée, ses spécificités, son hétérogénéité. 
 
@@ -63,7 +63,7 @@ plot(las, color = "Intensity") ## Reproduisez la même ligne en appliquant une p
 ```
 ---
 
-### 🟧 Séance 2 — Extraction des métriques structurales à partir du nuage de points (3h)
+### 🟧 Séance 2 — Extraction des métriques structurales à partir du nuage de points 
 
 **Objectif :** Extraire des variables décrivant la structure de la canopée à partir de données LiDAR normalisées, sur la base du script fourni.
 
@@ -98,7 +98,7 @@ summary(data)
   
 ---
 
-### 🟦 Séance 3 — Classification et spatialisation des peuplements (3h)
+### 🟦 Séance 3 — Classification et spatialisation des peuplements
 
 **Objectif :** Réaliser une classification des peuplements selon leurs caractéristiques structurales et représenter les résultats spatialement.
 
@@ -162,7 +162,7 @@ res.hcpc <- HCPC(res.pca, nb.clust = 4, graph = FALSE)  # nb.clust=-1 permet de 
 - Interprétation des classes : moyennes de variables, signification structurale.  
 - Lien avec les types de canopées selon Fahey.
 
-#### 3. Spatialisation et validation (1h)
+#### 3. Spatialisation et validation
 ```r
 # 5. Visualisation des clusters
 

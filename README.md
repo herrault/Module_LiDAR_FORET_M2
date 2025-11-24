@@ -21,6 +21,8 @@ Ce module appartient à l'UE Traitement de Nuages de Points et dure 12h. Les obj
 
 **Objectif :** Comprendre la nature et la structure des données LiDAR aériennes, visualiser et manipuler un nuage de points, et savoir les importer dans R.
 
+Les données dont accessibles ici : https://seafile.unistra.fr/d/b82497f4534d4e24a3cf/
+
 #### 1. Introduction 
 
 Un point de cours rapide vous sera proposé afin de reprendre les points suivants : 

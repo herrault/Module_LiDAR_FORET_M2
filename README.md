@@ -110,8 +110,12 @@ Avant de procéder à la classification, importons les données dont nous aurons
 
 ```r
 data <- read.csv("results_canopy_metrics.csv")
-grid <- st_read("data/plot_fabas.shp")
-grid_data <- grid %>% left_join(data, by = "Id")
+grid <- st_read("plot_fabas.shp")
+test = grid[,-3]
+test = test%>%mutate("Id" = seq(1,nrow(test)))
+grid_data <- data %>% left_join(test, by = "Id")
+grid_data$Id = seq(1:nrow(grid_data))
+st_write(grid_data, "grid_check_v2.shp")
 ```
 
 #### 2. Classification 
@@ -120,20 +124,14 @@ Pour la classification des données plots, nous procéderons différemment de l'
 ascendante hiérachique pour classer les plots au sein du plan factoriel. 
 
 ```r
-library(FactoMineR)   # pour PCA et HCPC
-library(factoextra)   # pour visualisations
-library(dplyr)        # pour manipulation des données si besoin
-
-# Charger les données
-data <- read.csv("results_canopy_metrics.csv")
 
 # Vérifier les données
-head(data)
-str(data)
+head(grid_data)
+str(grid_data)
 
 
 # 2. ACP sur les variables (en excluant la colonne ID si présente)
-res.pca <- PCA(data[, -1],      # exclure colonne ID
+res.pca <- PCA(grid_data[, c(2:14)],      # exclure colonne ID
                scale.unit = TRUE,  # standardiser les variables
                graph = FALSE)      # pas de graph par défaut
 
@@ -172,17 +170,39 @@ res.hcpc <- HCPC(res.pca, nb.clust = 4, graph = FALSE)  # nb.clust=-1 permet de 
 fviz_dend(res.hcpc, rect = TRUE, show_labels = TRUE)
 
 # Projeter le résultat de clustering dans l'espace de la PCA
-fviz_cluster(res.hcpc, 
-             repel = TRUE, 
+fviz_cluster(res.hcpc,
+             geom = "text",
              palette = "jco", 
-             geom = "point", 
-             ellipse.type = "convex")
+             ellipse.type = "convex", 
+             show.clust.cent = TRUE,
+             show_labels = TRUE
 
 # Description des clusters (moyennes des variables par cluster)
-res.hcpc$desc.var$quanti    # variables quantitatives
-res.hcpc$desc.ind$dist      # individus les plus caractéristiques
+# Sélectionner les groupes en excluant les valeurs NA observées dans le gap fraction
+gr1 = data_pca%>%filter(cluster==1,!is.na(gap))
+gr2 = data_pca%>%filter(cluster==2,!is.na(gap))
+gr3 = data_pca%>%filter(cluster==3,!is.na(gap))
+gr4 = data_pca%>%filter(cluster==4,!is.na(gap))
 
-# Représentez sous la forme d'histogramme les résultats obtenus et donnez une première lecture des classes de structure
+# Affichez les résultat du gap et de hauteur pour chaque groupe
+mean(gr1$gap)
+mean(gr1$MAX_CANOPY_HEIGHT)
+mean(gr1$MEAN_CANOPY_HEIGHT)
+
+mean(gr2$gap)
+mean(gr2$MAX_CANOPY_HEIGHT)
+mean(gr2$MEAN_CANOPY_HEIGHT)
+
+mean(gr3$gap)
+mean(gr3$MAX_CANOPY_HEIGHT)
+mean(gr3$MEAN_CANOPY_HEIGHT)
+
+mean(gr4$gap)
+mean(gr4$MAX_CANOPY_HEIGHT)
+mean(gr4$MEAN_CANOPY_HEIGHT)
+
+
+# Représentez sous la forme d'histogramme les résultats obtenus et donnez une première lecture des classes de structure [exo à faire]
 
 # 6. Extra : ajouter les clusters au dataframe original
 data$cluster <- factor(res.hcpc$data.clust$clust)
